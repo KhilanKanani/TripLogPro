@@ -1,0 +1,11 @@
+:: Server ::
+
+=> npm init -y
+=> npm i express
+=> npm i express
+=> npm i mongoose
+=> npm i dotend
+=> npm i nodemon
+=> npm i cors
+=> npm i axios
+=>  npm i compression
