@@ -1,80 +1,82 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-    GoogleMap,
-    useJsApiLoader,
-    DirectionsRenderer,
+    MapContainer,
+    TileLayer,
     Marker,
-} from "@react-google-maps/api";
+    Popup,
+    Polyline,
+    useMap,
+} from "react-leaflet";
+
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 import {
     ArrowLeft,
-    Fuel,
+    MapPin,
+    Route,
     Clock3,
+    Fuel,
+    Wallet,
     Truck,
     ShieldCheck,
-    Route,
-    Wallet,
     Navigation,
 } from "lucide-react";
 
-const RouteMap = () => {
+/* ICON FIX */
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    iconUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    shadowUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
+
+const Map = () => {
     const navigate = useNavigate();
     const { state } = useLocation();
 
-    const trip = state?.trip || {
-        pickup: "Rajkot, Gujarat, India",
-        dropoff: "Mumbai, Maharashtra, India",
-        vehicleType: "Car",
-        distanceKm: 450,
-        durationText: "8 Hours",
-        fuelStops: 1,
-        fuelCost: 2400,
-        cycleLeft: 68,
-    };
+    const trip = state?.trip;
 
-    const [directions, setDirections] = useState<any>(null);
-
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAP_KEY,
-    });
-
-    const center = useMemo(
-        () => ({
-            lat: 22.3039,
-            lng: 70.8022,
-        }),
-        []
-    );
+    const [routeLine, setRouteLine] = useState<any[]>([]);
+    const [pickupPos, setPickupPos] =
+        useState<any>(null);
+    const [dropPos, setDropPos] =
+        useState<any>(null);
 
     useEffect(() => {
-        if (!isLoaded) return;
+        if (!trip) return;
 
-        const service =
-            new window.google.maps.DirectionsService();
+        if (
+            trip.routePath &&
+            Array.isArray(trip.routePath)
+        ) {
+            const coords =
+                trip.routePath.map(
+                    (item: any) => [
+                        item[1],
+                        item[0],
+                    ]
+                );
 
-        service.route(
-            {
-                origin: trip.pickup,
-                destination: trip.dropoff,
-                travelMode:
-                    window.google.maps.TravelMode.DRIVING,
-            },
-            (result, status) => {
-                if (
-                    status ===
-                    window.google.maps.DirectionsStatus.OK
-                ) {
-                    setDirections(result);
-                }
-            }
-        );
-    }, [isLoaded]);
+            setRouteLine(coords);
 
-    if (!isLoaded) {
+            setPickupPos(coords[0]);
+
+            setDropPos(
+                coords[coords.length - 1]
+            );
+        }
+    }, [trip]);
+
+    if (!trip) {
         return (
             <div className="h-screen flex items-center justify-center text-xl font-bold">
-                Loading Google Map...
+                No Trip Found
             </div>
         );
     }
@@ -82,87 +84,145 @@ const RouteMap = () => {
     return (
         <div className="min-h-screen bg-slate-100">
 
-            {/* TOP BAR */}
-            <div className="sticky top-0 z-50 bg-white border-b border-slate-200">
-                <div className="max-w-7xl mx-auto px-3 h-[72px] flex items-center justify-between">
+            {/* TOP NAV */}
+            <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200">
+
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-[74px] flex items-center justify-between">
 
                     <div className="flex items-center gap-3">
+
                         <button
-                            onClick={() => navigate(-1)}
-                            className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center"
+                            onClick={() =>
+                                navigate(-1)
+                            }
+                            className="w-11 h-11 rounded-2xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center"
                         >
-                            <ArrowLeft size={18} />
+                            <ArrowLeft
+                                size={18}
+                            />
                         </button>
 
                         <div>
-                            <p className="text-xs text-slate-500 uppercase tracking-[0.25em]">
-                                Live Trip
+                            <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500">
+                                Smart Route
                             </p>
-                            <h2 className="font-bold text-slate-900">
-                                {trip.pickup} → {trip.dropoff}
+
+                            <h2 className="text-sm sm:text-lg font-bold text-slate-950">
+                                {
+                                    trip.pickup
+                                }{" "}
+                                →
+                                {
+                                    trip.dropoff
+                                }
                             </h2>
                         </div>
+
                     </div>
 
                     <div className="hidden md:flex px-4 py-2 rounded-full bg-emerald-50 text-emerald-600 text-sm font-semibold">
-                        Active
+                        Live Active
                     </div>
 
                 </div>
+
             </div>
 
             {/* BODY */}
-            <div className="max-w-7xl mx-auto px-3 py-6 grid lg:grid-cols-[1.7fr_0.9fr] gap-6">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 grid lg:grid-cols-[1.7fr_0.9fr] gap-6">
 
-                {/* MAP */}
-                <div className="relative rounded-[30px] overflow-hidden border border-slate-200 bg-white shadow-sm">
+                {/* MAP CARD */}
+                <div className="relative rounded-[32px] overflow-hidden bg-white border border-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
 
-                    <GoogleMap
-                        mapContainerStyle={{
-                            width: "100%",
-                            height: "720px",
-                        }}
-                        center={center}
+                    <MapContainer
+                        center={
+                            pickupPos || [
+                                22.3039,
+                                70.8022,
+                            ]
+                        }
                         zoom={7}
-                        options={{
-                            streetViewControl: false,
-                            mapTypeControl: false,
-                            fullscreenControl: false,
-                            zoomControl: true,
+                        style={{
+                            height: "760px",
+                            width: "100%",
                         }}
                     >
-                        {directions && (
-                            <DirectionsRenderer
-                                directions={directions}
-                                options={{
-                                    suppressMarkers: false,
-                                    polylineOptions: {
-                                        strokeColor: "#111827",
-                                        strokeWeight: 6,
-                                    },
-                                }}
-                            />
+                        <TileLayer
+                            attribution="&copy; OpenStreetMap"
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+
+                        {pickupPos && (
+                            <Marker
+                                position={
+                                    pickupPos
+                                }
+                            >
+                                <Popup>
+                                    Pickup:{" "}
+                                    {
+                                        trip.pickup
+                                    }
+                                </Popup>
+                            </Marker>
                         )}
 
-                        {!directions && (
-                            <Marker position={center} />
+                        {dropPos && (
+                            <Marker
+                                position={
+                                    dropPos
+                                }
+                            >
+                                <Popup>
+                                    Dropoff:{" "}
+                                    {
+                                        trip.dropoff
+                                    }
+                                </Popup>
+                            </Marker>
                         )}
-                    </GoogleMap>
 
-                    {/* FLOAT INFO CARD */}
-                    <div className="absolute bottom-5 left-5 right-5 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 flex items-center justify-between">
+                        {routeLine.length >
+                            0 && (
+                                <Polyline
+                                    positions={
+                                        routeLine
+                                    }
+                                    pathOptions={{
+                                        color: "#2563eb",
+                                        weight: 7,
+                                    }}
+                                />
+                            )}
+
+                        <FitRoute
+                            pickup={
+                                pickupPos
+                            }
+                            drop={dropPos}
+                        />
+                    </MapContainer>
+
+                    {/* FLOAT ETA */}
+                    <div className="absolute left-5 right-5 bottom-5 bg-white/95 backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-5 flex items-center justify-between">
 
                         <div>
-                            <p className="text-xs text-slate-500 uppercase">
-                                Estimated Arrival
+                            <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
+                                Estimated
+                                Arrival
                             </p>
-                            <h3 className="font-bold text-slate-900 mt-1">
-                                {trip.durationText}
+
+                            <h3 className="mt-1 text-xl font-bold text-slate-950">
+                                {
+                                    trip.durationText
+                                }
                             </h3>
                         </div>
 
-                        <div className="w-12 h-12 rounded-xl bg-slate-950 text-white flex items-center justify-center">
-                            <Navigation size={20} />
+                        <div className="w-14 h-14 rounded-2xl bg-slate-950 text-white flex items-center justify-center shadow-lg">
+                            <Navigation
+                                size={22}
+                            />
                         </div>
 
                     </div>
@@ -173,37 +233,91 @@ const RouteMap = () => {
                 <div className="space-y-4">
 
                     <StatCard
-                        icon={<Route size={18} />}
+                        icon={
+                            <MapPin
+                                size={18}
+                            />
+                        }
+                        title="Pickup"
+                        value={
+                            trip.pickup
+                        }
+                    />
+
+                    <StatCard
+                        icon={
+                            <MapPin
+                                size={18}
+                            />
+                        }
+                        title="Dropoff"
+                        value={
+                            trip.dropoff
+                        }
+                    />
+
+                    <StatCard
+                        icon={
+                            <Route
+                                size={18}
+                            />
+                        }
                         title="Distance"
                         value={`${trip.distanceKm} km`}
                     />
 
                     <StatCard
-                        icon={<Clock3 size={18} />}
+                        icon={
+                            <Clock3
+                                size={18}
+                            />
+                        }
                         title="Duration"
-                        value={trip.durationText}
+                        value={
+                            trip.durationText
+                        }
                     />
 
                     <StatCard
-                        icon={<Fuel size={18} />}
+                        icon={
+                            <Fuel
+                                size={18}
+                            />
+                        }
                         title="Fuel Stops"
-                        value={trip.fuelStops}
+                        value={
+                            trip.fuelStops
+                        }
                     />
 
                     <StatCard
-                        icon={<Wallet size={18} />}
+                        icon={
+                            <Wallet
+                                size={18}
+                            />
+                        }
                         title="Fuel Cost"
                         value={`₹${trip.fuelCost}`}
                     />
 
                     <StatCard
-                        icon={<Truck size={18} />}
+                        icon={
+                            <Truck
+                                size={18}
+                            />
+                        }
                         title="Vehicle"
-                        value={trip.vehicleType}
+                        value={
+                            trip.vehicleType
+                        }
                     />
 
                     <StatCard
-                        icon={<ShieldCheck size={18} />}
+                        icon={
+                            <ShieldCheck
+                                size={18}
+                            />
+                        }
                         title="Cycle Left"
                         value={`${trip.cycleLeft} Hr`}
                     />
@@ -211,24 +325,53 @@ const RouteMap = () => {
                 </div>
 
             </div>
+
         </div>
     );
 };
 
-const StatCard = ({ icon, title, value }: any) => (
-    <div className="rounded-3xl bg-white border border-slate-200 p-5 shadow-sm">
-        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+const FitRoute = ({
+    pickup,
+    drop,
+}: any) => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (pickup && drop) {
+            map.fitBounds(
+                [pickup, drop],
+                {
+                    padding: [
+                        50, 50,
+                    ],
+                }
+            );
+        }
+    }, [pickup, drop]);
+
+    return null;
+};
+
+const StatCard = ({
+    icon,
+    title,
+    value,
+}: any) => (
+    <div className="rounded-3xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-xl transition-all duration-300">
+
+        <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900">
             {icon}
         </div>
 
-        <p className="text-sm text-slate-500 mt-4">
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-500 mt-4">
             {title}
         </p>
 
-        <h3 className="text-xl font-bold text-slate-950 mt-1">
+        <h3 className="text-sm sm:text-lg font-bold text-slate-950 mt-1 break-words">
             {value}
         </h3>
+
     </div>
 );
 
-export default RouteMap;
+export default Map;
