@@ -12,10 +12,8 @@ import {
 } from "lucide-react";
 import {
     Code2,
-    BriefcaseBusiness,
     Layers3,
 } from "lucide-react";
-import { Globe, ExternalLink } from "lucide-react";
 
 
 const Home = () => {
