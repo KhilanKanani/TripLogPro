@@ -159,7 +159,10 @@ const ContactUs = () => {
                             </div>
 
                             {/* FORM */}
-                            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSubmit();
+                            }} className="mt-6 space-y-4">
 
                                 <div>
                                     <label className="text-sm font-semibold text-slate-700">
