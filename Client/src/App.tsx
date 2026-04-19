@@ -1,16 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
 import Footer from "./components/Footer";
+import Home from "./pages/Home";
 import Planner from "./pages/Planner";
 import ContactUs from "./pages/ContactUs";
 import Results from "./pages/Results";
 import Map from "./components/Map";
 
-function App() {
+function Layout() {
+  const location = useLocation();
+
+  const isMapPage =
+    location.pathname === "/map";
+
   return (
-    <BrowserRouter>
-      <Navbar />
+    <>
+      {!isMapPage && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -21,6 +26,14 @@ function App() {
       </Routes>
 
       <Footer />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout />
     </BrowserRouter>
   );
 }

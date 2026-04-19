@@ -23,13 +23,10 @@ const Planner = () => {
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
-        current: "",
-        pickup: "",
-        dropoff: "",
-        vehicleType: "",
-        tripDate: "",
-        fuelCapacity: "",
-        cycleUsed: "",
+        currentLocation: "",
+        pickupLocation: "",
+        dropoffLocation: "",
+        currentCycleUsedHours: "",
     });
 
     const generateRoute = async () => {
@@ -231,10 +228,10 @@ const Planner = () => {
                                     e.preventDefault();
                                     generateRoute();
                                 }}
-                                className="mt-6 space-y-4"
+                                className="mt-6 space-y-5"
                             >
 
-                                {/* CURRENT */}
+                                {/* CURRENT LOCATION */}
                                 <div>
                                     <label className="text-sm font-semibold text-slate-700">
                                         Current Location
@@ -244,197 +241,109 @@ const Planner = () => {
                                         <LocateFixed size={18} className="text-slate-500" />
 
                                         <input
-                                            value={form.current}
-                                            placeholder="Ahmedabad"
-                                            className="w-full bg-transparent outline-none"
                                             required
+                                            placeholder="Chicago, IL"
+                                            value={form.currentLocation}
+                                            className="w-full bg-transparent outline-none"
                                             onChange={(e) =>
                                                 setForm({
                                                     ...form,
-                                                    current: e.target.value,
+                                                    currentLocation: e.target.value,
                                                 })
                                             }
                                         />
                                     </div>
                                 </div>
 
-                                <div className="grid sm:grid-cols-2 gap-4">
+                                {/* PICKUP */}
+                                <div>
+                                    <label className="text-sm font-semibold text-slate-700">
+                                        Pickup Location
+                                    </label>
 
-                                    {/* PICKUP */}
-                                    <div>
-                                        <label className="text-sm font-semibold text-slate-700">
-                                            Pickup Location
-                                        </label>
+                                    <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
+                                        <MapPinned size={18} className="text-slate-500" />
 
-                                        <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
-                                            <MapPinned size={18} className="text-slate-500" />
-
-                                            <input
-                                                value={form.pickup}
-                                                placeholder="Rajkot"
-                                                className="w-full bg-transparent outline-none"
-                                                required
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        pickup: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* DROPOFF */}
-                                    <div>
-                                        <label className="text-sm font-semibold text-slate-700">
-                                            Dropoff Location
-                                        </label>
-
-                                        <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
-                                            <Navigation size={18} className="text-slate-500" />
-
-                                            <input
-                                                value={form.dropoff}
-                                                placeholder="Mumbai"
-                                                className="w-full bg-transparent outline-none"
-                                                required
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        dropoff: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* GRID */}
-                                <div className="grid sm:grid-cols-2 gap-4">
-
-                                    <div>
-                                        <label className="text-sm font-semibold text-slate-700">
-                                            Vehicle Type
-                                        </label>
-
-                                        <select
-                                            value={form.vehicleType}
-                                            className="mt-2 w-full rounded bg-slate-50 border border-slate-200 px-4 py-3 outline-none"
+                                        <input
+                                            required
+                                            placeholder="Dallas, TX"
+                                            value={form.pickupLocation}
+                                            className="w-full bg-transparent outline-none"
                                             onChange={(e) =>
                                                 setForm({
                                                     ...form,
-                                                    vehicleType: e.target.value,
+                                                    pickupLocation: e.target.value,
                                                 })
                                             }
-                                        >
-                                            <option value="Bike">Bike</option>
-                                            <option value="Scooter">Scooter</option>
-                                            <option value="Car">Car</option>
-                                            <option value="Mini Truck">Mini Truck</option>
-                                            <option value="Pickup Truck">Pickup Truck</option>
-                                            <option value="Container Truck">Container Truck</option>
-                                            <option value='tanker'>Tanker</option>
-                                            <option value="Trailer Truck">Trailer Truck</option>
-                                        </select>
+                                        />
                                     </div>
-
-                                    <div>
-                                        <label className="text-sm font-semibold text-slate-700">
-                                            Trip Date
-                                        </label>
-
-                                        <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
-                                            <CalendarDays
-                                                size={18}
-                                                className="text-slate-500"
-                                            />
-
-                                            <input
-                                                type="date"
-                                                value={form.tripDate}
-                                                className="w-full bg-transparent outline-none"
-                                                required
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        tripDate: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
                                 </div>
 
-                                {/* EXTRA GRID */}
-                                <div className="grid sm:grid-cols-2 gap-4">
+                                {/* DROPOFF */}
+                                <div>
+                                    <label className="text-sm font-semibold text-slate-700">
+                                        Dropoff Location
+                                    </label>
 
-                                    <div>
-                                        <label className="text-sm font-semibold text-slate-700">
-                                            Fuel Capacity
-                                        </label>
+                                    <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
+                                        <Navigation size={18} className="text-slate-500" />
 
-                                        <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
-                                            <Fuel size={18} className="text-slate-500" />
-
-                                            <input
-                                                type="number"
-                                                value={form.fuelCapacity}
-                                                placeholder="120"
-                                                className="w-full bg-transparent outline-none"
-                                                required
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        fuelCapacity: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
+                                        <input
+                                            required
+                                            placeholder="Atlanta, GA"
+                                            value={form.dropoffLocation}
+                                            className="w-full bg-transparent outline-none"
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    dropoffLocation: e.target.value,
+                                                })
+                                            }
+                                        />
                                     </div>
-
-                                    <div>
-                                        <label className="text-sm font-semibold text-slate-700">
-                                            Cycle Used
-                                        </label>
-
-                                        <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
-                                            <Clock3 size={18} className="text-slate-500" />
-
-                                            <input
-                                                type="number"
-                                                value={form.cycleUsed}
-                                                placeholder="45"
-                                                className="w-full bg-transparent outline-none"
-                                                required
-                                                onChange={(e) =>
-                                                    setForm({
-                                                        ...form,
-                                                        cycleUsed: e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
                                 </div>
 
-                                {/* BUTTON */}
+                                {/* CURRENT CYCLE USED */}
+                                <div>
+                                    <label className="text-sm font-semibold text-slate-700">
+                                        Current Cycle Used (Hrs)
+                                    </label>
+
+                                    <div className="mt-2 flex items-center gap-3 rounded bg-slate-50 border border-slate-200 px-4 py-3">
+                                        <Clock3 size={18} className="text-slate-500" />
+
+                                        <input
+                                            type="number"
+                                            required
+                                            min="0"
+                                            max="70"
+                                            placeholder="12"
+                                            value={form.currentCycleUsedHours}
+                                            className="w-full bg-transparent outline-none"
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    currentCycleUsedHours:
+                                                        e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* SUBMIT */}
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="group w-full cursor-pointer mt-2 px-6 py-4 rounded bg-slate-950 text-white font-semibold flex items-center justify-center gap-2 shadow-xl hover:-translate-y-1 transition-all duration-300 disabled:opacity-70"
+                                    className="w-full mt-2 px-6 py-4 rounded bg-slate-950 text-white font-semibold flex items-center justify-center gap-2 hover:-translate-y-1 transition-all duration-300"
                                 >
                                     {!loading && <Route size={18} />}
 
-                                    {loading ? "Generating..." : "Generate Route"}
+                                    {loading
+                                        ? "Generating..."
+                                        : "Generate Trip"}
 
-                                    {!loading && (
-                                        <ArrowRight
-                                            size={18}
-                                            className="group-hover:translate-x-2 transition-all duration-300"
-                                        />
-                                    )}
+                                    {!loading && <ArrowRight size={18} />}
                                 </button>
 
                             </form>

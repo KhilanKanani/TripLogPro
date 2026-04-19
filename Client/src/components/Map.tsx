@@ -1,150 +1,82 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-    MapContainer,
-    TileLayer,
-    Marker,
-    Popup,
-    Polyline,
-    useMap,
-} from "react-leaflet";
-
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Navigation, MapPin, FileText, ShieldCheck, Gauge, Truck, ArrowLeft, } from "lucide-react";
 
-import {
-    ArrowLeft,
-    MapPin,
-    Route,
-    Clock3,
-    Fuel,
-    Wallet,
-    Truck,
-    ShieldCheck,
-    Navigation,
-} from "lucide-react";
-
-/* ICON FIX */
+/* LEAFLET ICON FIX */
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl:
-        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-    iconUrl:
-        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl:
-        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
 const Map = () => {
-    const navigate = useNavigate();
     const { state } = useLocation();
 
     const trip = state?.trip;
-
+    const navigate = useNavigate()
     const [routeLine, setRouteLine] = useState<any[]>([]);
-    const [pickupPos, setPickupPos] =
-        useState<any>(null);
-    const [dropPos, setDropPos] =
-        useState<any>(null);
+    const [pickupPos, setPickupPos] = useState<any>(null);
+    const [dropPos, setDropPos] = useState<any>(null);
 
     useEffect(() => {
         if (!trip) return;
 
-        if (
-            trip.routePath &&
-            Array.isArray(trip.routePath)
-        ) {
+        if (trip.routePath && Array.isArray(trip.routePath)) {
             const coords =
-                trip.routePath.map(
-                    (item: any) => [
-                        item[1],
-                        item[0],
-                    ]
-                );
+                trip.routePath.map((item: any) => [
+                    item[1],
+                    item[0],
+                ]);
 
             setRouteLine(coords);
-
             setPickupPos(coords[0]);
-
-            setDropPos(
-                coords[coords.length - 1]
-            );
+            setDropPos(coords[coords.length - 1]);
         }
     }, [trip]);
 
-    if (!trip) {
+    if (!trip)
         return (
             <div className="h-screen flex items-center justify-center text-xl font-bold">
                 No Trip Found
             </div>
         );
-    }
 
     return (
-        <div className="min-h-screen bg-slate-100">
+        <div className="py-10 font-serif pt-10 min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200">
 
-            {/* TOP NAV */}
-            <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200">
+            {/* MAIN */}
+            <div className="max-w-7xl mx-auto px-3">
 
-                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-[74px] flex items-center justify-between">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="mb-5 cursor-pointer text-sm font-serif inline-flex items-center gap-2 text-slate-900 font-semibold hover:text-blue-600 transition-all duration-300"
+                >
+                    <ArrowLeft size={18} />
+                    <span>Back To Trip</span>
+                </button>
 
-                    <div className="flex items-center gap-3">
-
-                        <button
-                            onClick={() =>
-                                navigate(-1)
-                            }
-                            className="w-11 h-11 rounded-2xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center"
-                        >
-                            <ArrowLeft
-                                size={18}
-                            />
-                        </button>
-
-                        <div>
-                            <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500">
-                                Smart Route
-                            </p>
-
-                            <h2 className="text-sm sm:text-lg font-bold text-slate-950">
-                                {
-                                    trip.pickup
-                                }{" "}
-                                →
-                                {
-                                    trip.dropoff
-                                }
-                            </h2>
-                        </div>
-
-                    </div>
-
-                    <div className="hidden md:flex px-4 py-2 rounded-full bg-emerald-50 text-emerald-600 text-sm font-semibold">
-                        Live Active
-                    </div>
-
-                </div>
-
-            </div>
-
-            {/* BODY */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 grid lg:grid-cols-[1.7fr_0.9fr] gap-6">
-
-                {/* MAP CARD */}
-                <div className="relative rounded-[32px] overflow-hidden bg-white border border-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-
+                {/* MAP TOP ONLY */}
+                <div className="rounded overflow-hidden border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
                     <MapContainer
                         center={
                             pickupPos || [
-                                22.3039,
-                                70.8022,
+                                22.30,
+                                70.80,
                             ]
                         }
                         zoom={7}
                         style={{
-                            height: "760px",
                             width: "100%",
+                            height:
+                                window.innerWidth <
+                                    640
+                                    ? "320px"
+                                    : "620px",
                         }}
                     >
                         <TileLayer
@@ -159,10 +91,7 @@ const Map = () => {
                                 }
                             >
                                 <Popup>
-                                    Pickup:{" "}
-                                    {
-                                        trip.pickup
-                                    }
+                                    Pickup
                                 </Popup>
                             </Marker>
                         )}
@@ -174,10 +103,7 @@ const Map = () => {
                                 }
                             >
                                 <Popup>
-                                    Dropoff:{" "}
-                                    {
-                                        trip.dropoff
-                                    }
+                                    Dropoff
                                 </Popup>
                             </Marker>
                         )}
@@ -196,131 +122,213 @@ const Map = () => {
                             )}
 
                         <FitRoute
-                            pickup={
-                                pickupPos
-                            }
+                            pickup={pickupPos}
                             drop={dropPos}
                         />
                     </MapContainer>
+                </div>
 
-                    {/* FLOAT ETA */}
-                    <div className="absolute left-5 right-5 bottom-5 bg-white/95 backdrop-blur-xl rounded-3xl border border-slate-200 shadow-xl p-5 flex items-center justify-between">
+                <div className="mt-5 bg-white/90 backdrop-blur-xl border border-slate-200 rounded shadow-xl p-3 sm:p-5 grid grid-cols-2 gap-3">
+                    <MiniCard
+                        icon={
+                            <Gauge size={18} />
+                        }
+                        title="Cycle Used"
+                        value={`${trip.currentCycleUsedHours || 0
+                            } Hr`}
+                    />
 
-                        <div>
-                            <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
-                                Estimated
-                                Arrival
-                            </p>
-
-                            <h3 className="mt-1 text-xl font-bold text-slate-950">
-                                {
-                                    trip.durationText
-                                }
-                            </h3>
-                        </div>
-
-                        <div className="w-14 h-14 rounded-2xl bg-slate-950 text-white flex items-center justify-center shadow-lg">
-                            <Navigation
-                                size={22}
-                            />
-                        </div>
-
-                    </div>
+                    <MiniCard
+                        icon={
+                            <Truck size={18} />
+                        }
+                        title="Status"
+                        value="Running"
+                    />
 
                 </div>
 
-                {/* RIGHT SIDE */}
-                <div className="space-y-4">
+                {/* DETAILS BELOW */}
+                <div className="grid xl:grid-cols-3 gap-5 mt-5">
 
-                    <StatCard
-                        icon={
-                            <MapPin
-                                size={18}
-                            />
-                        }
-                        title="Pickup"
-                        value={
-                            trip.pickup
-                        }
-                    />
+                    {/* LEFT */}
+                    <div className="xl:col-span-1 space-y-5">
 
-                    <StatCard
-                        icon={
-                            <MapPin
-                                size={18}
+                        <GlassCard
+                            icon={
+                                <MapPin size={18} />
+                            }
+                            title="Locations"
+                        >
+                            <InfoRow
+                                label="Current"
+                                value={
+                                    trip.currentLocation
+                                }
                             />
-                        }
-                        title="Dropoff"
-                        value={
-                            trip.dropoff
-                        }
-                    />
+                            <InfoRow
+                                label="Pickup"
+                                value={
+                                    trip.pickupLocation
+                                }
+                            />
+                            <InfoRow
+                                label="Dropoff"
+                                value={
+                                    trip.dropoffLocation
+                                }
+                            />
+                        </GlassCard>
 
-                    <StatCard
-                        icon={
-                            <Route
-                                size={18}
-                            />
-                        }
-                        title="Distance"
-                        value={`${trip.distanceKm} km`}
-                    />
+                        <GlassCard
+                            icon={
+                                <ShieldCheck size={18} />
+                            }
+                            title="Stops & Rests"
+                        >
+                            {trip.stopsAndRests
+                                ?.length >
+                                0 ? (
+                                trip.stopsAndRests.map(
+                                    (
+                                        item: any,
+                                        i: number
+                                    ) => (
+                                        <div
+                                            key={
+                                                i
+                                            }
+                                            className="rounded-2xl bg-slate-50 p-3 text-sm"
+                                        >
+                                            {
+                                                item.stopType
+                                            }{" "}
+                                            •{" "}
+                                            {
+                                                item.afterMiles
+                                            }{" "}
+                                            Miles
+                                        </div>
+                                    )
+                                )
+                            ) : (
+                                <p className="text-sm text-slate-500">
+                                    No Stops
+                                </p>
+                            )}
+                        </GlassCard>
 
-                    <StatCard
-                        icon={
-                            <Clock3
-                                size={18}
-                            />
-                        }
-                        title="Duration"
-                        value={
-                            trip.durationText
-                        }
-                    />
+                    </div>
 
-                    <StatCard
-                        icon={
-                            <Fuel
-                                size={18}
-                            />
-                        }
-                        title="Fuel Stops"
-                        value={
-                            trip.fuelStops
-                        }
-                    />
+                    {/* RIGHT */}
+                    <div className="xl:col-span-2 space-y-5">
 
-                    <StatCard
-                        icon={
-                            <Wallet
-                                size={18}
-                            />
-                        }
-                        title="Fuel Cost"
-                        value={`₹${trip.fuelCost}`}
-                    />
+                        <GlassCard
+                            icon={
+                                <Navigation size={18} />
+                            }
+                            title="Route Instructions"
+                        >
+                            <div className="grid md:grid-cols-3 gap-3">
 
-                    <StatCard
-                        icon={
-                            <Truck
-                                size={18}
-                            />
-                        }
-                        title="Vehicle"
-                        value={
-                            trip.vehicleType
-                        }
-                    />
+                                {trip.routeInstructions
+                                    ?.length >
+                                    0 ? (
+                                    trip.routeInstructions.map(
+                                        (
+                                            item: string,
+                                            i: number
+                                        ) => (
+                                            <div
+                                                key={
+                                                    i
+                                                }
+                                                className="rounded bg-slate-100 p-3 text-sm text-slate-700"
+                                            >
+                                                {i +
+                                                    1}
+                                                .{" "}
+                                                {
+                                                    item
+                                                }
+                                            </div>
+                                        )
+                                    )
+                                ) : (
+                                    <p>
+                                        No Data
+                                    </p>
+                                )}
 
-                    <StatCard
-                        icon={
-                            <ShieldCheck
-                                size={18}
-                            />
-                        }
-                        title="Cycle Left"
-                        value={`${trip.cycleLeft} Hr`}
-                    />
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            icon={
+                                <FileText size={18} />
+                            }
+                            title="Daily Logs"
+                        >
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+                                {trip.dailyLogSheets
+                                    ?.length >
+                                    0 ? (
+                                    trip.dailyLogSheets.map(
+                                        (
+                                            log: any,
+                                            i: number
+                                        ) => (
+                                            <div
+                                                key={
+                                                    i
+                                                }
+                                                className="rounded bg-slate-100 p-4"
+                                            >
+                                                <p className="font-bold text-slate-950">
+                                                    Day{" "}
+                                                    {
+                                                        log.day
+                                                    }
+                                                </p>
+
+                                                <p className="text-sm  text-slate-500 mt-2">
+                                                    Driving:{" "}
+                                                    {
+                                                        log.drivingHours
+                                                    }{" "}
+                                                    Hr
+                                                </p>
+
+                                                <p className="text-sm  text-slate-500">
+                                                    Duty:{" "}
+                                                    {
+                                                        log.onDutyHours
+                                                    }{" "}
+                                                    Hr
+                                                </p>
+
+                                                <p className="text-sm  text-slate-500">
+                                                    Off:{" "}
+                                                    {
+                                                        log.offDutyHours
+                                                    }{" "}
+                                                    Hr
+                                                </p>
+
+                                            </div>
+                                        )
+                                    )
+                                ) : (
+                                    <p>
+                                        No Logs
+                                    </p>
+                                )}
+
+                            </div>
+                        </GlassCard>
+
+                    </div>
 
                 </div>
 
@@ -330,10 +338,62 @@ const Map = () => {
     );
 };
 
-const FitRoute = ({
-    pickup,
-    drop,
-}: any) => {
+/* CARD */
+const GlassCard = ({ icon, title, children, }: any) => (
+    <div className="rounded bg-white border border-slate-200 p-4 h-90 overflow-y-auto sm:p-6 shadow-[0_15px_50px_rgba(15,23,42,0.06)]">
+
+        <div className="flex items-center gap-3 mb-5">
+
+            <div className="w-11 h-11 rounded bg-slate-950 text-white flex items-center justify-center">
+                {icon}
+            </div>
+
+            <h3 className="font-bold text-slate-950 text-lg">
+                {title}
+            </h3>
+
+        </div>
+
+        <div className="space-y-3">
+            {children}
+        </div>
+
+    </div>
+);
+
+/* MINI TOP */
+const MiniCard = ({ icon, title, value, }: any) => (
+    <div className="rounded bg-white border border-slate-200 p-3">
+
+        <div className="flex items-center gap-2 text-slate-600 text-xs uppercase tracking-[0.18em]">
+            {icon}
+            {title}
+        </div>
+
+        <h3 className="text-base sm:text-lg font-bold text-slate-950 mt-2">
+            {value}
+        </h3>
+
+    </div>
+);
+
+/* INFO */
+const InfoRow = ({ label, value, }: any) => (
+    <div className="rounded bg-slate-100 p-3">
+
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+            {label}
+        </p>
+
+        <h4 className="text-sm font-semibold text-slate-950 mt-1 break-words">
+            {value}
+        </h4>
+
+    </div>
+);
+
+/* FIT MAP */
+const FitRoute = ({ pickup, drop, }: any) => {
     const map = useMap();
 
     useEffect(() => {
@@ -351,27 +411,5 @@ const FitRoute = ({
 
     return null;
 };
-
-const StatCard = ({
-    icon,
-    title,
-    value,
-}: any) => (
-    <div className="rounded-3xl bg-white border border-slate-200 p-5 shadow-sm hover:shadow-xl transition-all duration-300">
-
-        <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900">
-            {icon}
-        </div>
-
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500 mt-4">
-            {title}
-        </p>
-
-        <h3 className="text-sm sm:text-lg font-bold text-slate-950 mt-1 break-words">
-            {value}
-        </h3>
-
-    </div>
-);
 
 export default Map;

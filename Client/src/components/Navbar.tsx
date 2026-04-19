@@ -49,7 +49,7 @@ const Navbar = () => {
             : "text-slate-500 hover:text-slate-900";
 
     return (
-        <nav className="font-serif fixed top-0 z-50 w-full bg-white/75 backdrop-blur-3xl border-b border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.05)]">
+        <nav className="font-serif fixed top-0 z-100 w-full bg-white/75 backdrop-blur-3xl border-b border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.05)]">
 
             {/* TOP LINE */}
             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-slate-400 to-transparent" />
