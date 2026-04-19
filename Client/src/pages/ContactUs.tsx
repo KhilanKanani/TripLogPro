@@ -9,8 +9,14 @@ import {
     Globe,
     ArrowRight,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const ContactUs = () => {
+
+    const handleSubmit = function () {
+        toast.success("Thank you for contacting us! We'll get back to you soon.");
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-100 via-white to-slate-100 overflow-hidden">
 
@@ -153,7 +159,7 @@ const ContactUs = () => {
                             </div>
 
                             {/* FORM */}
-                            <form className="mt-6 space-y-4">
+                            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
 
                                 <div>
                                     <label className="text-sm font-semibold text-slate-700">
@@ -162,6 +168,7 @@ const ContactUs = () => {
 
                                     <input
                                         type="text"
+                                        required
                                         placeholder="Enter your full name"
                                         className="mt-2 w-full rounded bg-slate-50 border border-slate-200 px-4 py-3 outline-none"
                                     />
@@ -176,6 +183,7 @@ const ContactUs = () => {
 
                                         <input
                                             type="email"
+                                            required
                                             placeholder="Enter email"
                                             className="mt-2 w-full rounded bg-slate-50 border border-slate-200 px-4 py-3 outline-none"
                                         />
@@ -188,6 +196,7 @@ const ContactUs = () => {
 
                                         <input
                                             type="text"
+                                            required
                                             placeholder="Phone number"
                                             className="mt-2 w-full rounded bg-slate-50 border border-slate-200 px-4 py-3 outline-none"
                                         />
@@ -202,6 +211,7 @@ const ContactUs = () => {
 
                                     <input
                                         type="text"
+                                        required
                                         placeholder="How can we help?"
                                         className="mt-2 w-full rounded bg-slate-50 border border-slate-200 px-4 py-3 outline-none"
                                     />
@@ -214,6 +224,7 @@ const ContactUs = () => {
 
                                     <textarea
                                         rows={3}
+                                        required
                                         placeholder="Write your message..."
                                         className="mt-2 w-full rounded bg-slate-50 border border-slate-200 px-4 py-3 outline-none resize-none"
                                     />
