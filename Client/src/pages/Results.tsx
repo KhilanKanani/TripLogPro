@@ -11,9 +11,39 @@ import {
     Activity,
     Gauge,
     MapPinned,
+    Loader2,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BACKEND_URL } from "../main";
+import axios from "axios";
 
 const Results = () => {
+
+    const [trips, setTrips] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchTrips = async () => {
+        try {
+            const { data } = await axios.get(`${BACKEND_URL}/api/trip/all`);
+
+            if (data.success) {
+                setTrips(data.trips);
+            }
+        }
+
+        catch (error) {
+            console.log(error);
+        }
+
+        finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchTrips();
+    }, []);
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-100 via-white to-slate-100 overflow-hidden">
 
@@ -202,73 +232,173 @@ const Results = () => {
 
                 <div className="rounded bg-white border border-slate-200 shadow-sm overflow-hidden">
 
-                    <div className="p-6 border-b border-slate-100">
+                    {/* HEADER */}
+                    <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
-                        <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
-                            Recent Reports
-                        </p>
+                        <div>
+                            <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                                Recent Reports
+                            </p>
 
-                        <h2 className="mt-2 text-2xl font-serif font-bold text-slate-950">
-                            Route Activity Logs
-                        </h2>
+                            <h2 className="mt-2 text-2xl font-serif font-bold text-slate-950">
+                                Route Activity Logs
+                            </h2>
+                        </div>
+
+                        <div className="text-sm text-slate-500 font-medium">
+                            Total Trips:{" "}
+                            <span className="text-slate-950 font-bold">
+                                {trips.length}
+                            </span>
+                        </div>
 
                     </div>
 
-                    <div className="overflow-x-auto">
+                    {/* LOADING */}
+                    {loading ? (
+                        <div className="p-16 flex justify-center">
 
-                        <table className="w-full min-w-[700px]">
+                            <Loader2
+                                size={34}
+                                className="animate-spin text-slate-400"
+                            />
 
-                            <thead className="bg-slate-50">
-                                <tr className="text-left text-sm text-slate-500">
-                                    <th className="px-6 py-4">Trip ID</th>
-                                    <th className="px-6 py-4">Route</th>
-                                    <th className="px-6 py-4">Distance</th>
-                                    <th className="px-6 py-4">ETA</th>
-                                    <th className="px-6 py-4">Status</th>
-                                </tr>
-                            </thead>
+                        </div>
+                    ) : trips.length === 0 ? (
 
-                            <tbody>
+                        /* EMPTY */
+                        <div className="p-16 text-center">
 
-                                {[
-                                    ["TRP-1021", "Dallas → Miami", "1280 mi", "2 Days", "Completed"],
-                                    ["TRP-1022", "Houston → Austin", "240 mi", "5 Hr", "Active"],
-                                    ["TRP-1023", "Rajkot → Surat", "220 km", "4 Hr", "Completed"],
-                                    ["TRP-1024", "Mumbai → Pune", "150 km", "3 Hr", "Pending"],
-                                ].map((row, i) => (
-                                    <tr
-                                        key={i}
-                                        className="border-t border-slate-100 hover:bg-slate-50"
-                                    >
-                                        <td className="px-6 py-4 font-semibold text-slate-950">
-                                            {row[0]}
-                                        </td>
+                            <h3 className="text-xl font-bold text-slate-900">
+                                No Trips Found
+                            </h3>
 
-                                        <td className="px-6 py-4 text-slate-600">
-                                            {row[1]}
-                                        </td>
+                            <p className="text-sm text-slate-500 mt-2">
+                                Generate planner routes to see analytics.
+                            </p>
 
-                                        <td className="px-6 py-4 text-slate-600">
-                                            {row[2]}
-                                        </td>
+                        </div>
 
-                                        <td className="px-6 py-4 text-slate-600">
-                                            {row[3]}
-                                        </td>
+                    ) : (
 
-                                        <td className="px-6 py-4">
-                                            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold">
-                                                {row[4]}
-                                            </span>
-                                        </td>
+                        /* TABLE */
+                        <div className="overflow-x-auto">
+
+                            <table className="w-full min-w-[900px]">
+
+                                <thead className="bg-slate-50">
+                                    <tr className="text-left text-sm text-slate-500">
+
+                                        <th className="px-6 py-4">
+                                            Trip ID
+                                        </th>
+
+                                        <th className="px-6 py-4">
+                                            Route
+                                        </th>
+
+                                        <th className="px-6 py-4">
+                                            Cycle Used
+                                        </th>
+
+                                        <th className="px-6 py-4">
+                                            Stops
+                                        </th>
+
+                                        <th className="px-6 py-4">
+                                            Days
+                                        </th>
+
+                                        <th className="px-6 py-4">
+                                            Created
+                                        </th>
+
                                     </tr>
-                                ))}
+                                </thead>
 
-                            </tbody>
+                                <tbody>
 
-                        </table>
+                                    {trips.map(
+                                        (
+                                            trip,
+                                            i
+                                        ) => (
+                                            <tr
+                                                key={
+                                                    trip._id
+                                                }
+                                                className="border-t border-slate-100 hover:bg-slate-50 transition-all"
+                                            >
 
-                    </div>
+                                                {/* ID */}
+                                                <td className="px-6 py-4 font-semibold text-slate-950">
+                                                    TRP-
+                                                    {String(
+                                                        i +
+                                                        1001
+                                                    )}
+                                                </td>
+
+                                                {/* ROUTE */}
+                                                <td className="px-6 py-4 text-slate-700 font-medium">
+                                                    {
+                                                        trip.pickupLocation
+                                                    }{" "}
+                                                    →
+                                                    {
+                                                        trip.dropoffLocation
+                                                    }
+                                                </td>
+
+                                                {/* CYCLE */}
+                                                <td className="px-6 py-4 text-slate-600">
+                                                    {
+                                                        trip.currentCycleUsedHours
+                                                    }{" "}
+                                                    Hr
+                                                </td>
+
+                                                {/* STOPS */}
+                                                <td className="px-6 py-4">
+
+                                                    <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold">
+                                                        {trip.stopsAndRests
+                                                            ?.length ||
+                                                            0}{" "}
+                                                        Stops
+                                                    </span>
+
+                                                </td>
+
+                                                {/* DAYS */}
+                                                <td className="px-6 py-4">
+
+                                                    <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold">
+                                                        {trip.dailyLogSheets
+                                                            ?.length ||
+                                                            1}{" "}
+                                                        Days
+                                                    </span>
+
+                                                </td>
+
+                                                {/* CREATED */}
+                                                <td className="px-6 py-4 text-slate-500 text-sm">
+                                                    {new Date(
+                                                        trip.createdAt
+                                                    ).toLocaleDateString()}
+                                                </td>
+
+                                            </tr>
+                                        )
+                                    )}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    )}
 
                 </div>
 
