@@ -42,8 +42,67 @@ const Map = () => {
 
     if (!trip)
         return (
-            <div className="h-screen flex items-center justify-center text-xl font-bold">
-                No Trip Found
+            <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200 flex items-center justify-center px-4">
+
+                {/* GLOW */}
+                <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200/40 blur-[140px] rounded-full" />
+                <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-200/40 blur-[140px] rounded-full" />
+
+                <div className="relative z-10 max-w-md w-full rounded bg-white border border-slate-200 shadow-[0_30px_90px_rgba(15,23,42,0.08)] p-4 sm:p-8 text-center">
+
+                    {/* LOGO */}
+                    <div className="mx-auto flex items-center justify-center">
+
+                        <img
+                            src="/TriplogPro.png"
+                            alt="Logo"
+                            className="w-auto h-15 sm::h-18 md:h-20 object-contain"
+                        />
+
+                    </div>
+
+                    {/* BADGE */}
+                    <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold border border-rose-100">
+                        Route Missing
+                    </div>
+
+                    {/* TITLE */}
+                    <h1 className="mt-5 text-3xl sm:text-4xl font-black text-slate-950">
+                        No Trip Found
+                    </h1>
+
+                    {/* TEXT */}
+                    <p className="mt-3 text-sm sm:text-base text-slate-500 leading-7">
+                        We couldn’t locate any trip data for this route.
+                        Generate a new smart route plan to continue.
+                    </p>
+
+                    {/* ACTIONS */}
+                    <div className="mt-7 flex sm:flex-row flex-col items-center justify-center gap-2">
+
+                        <button
+                            onClick={() => navigate("/planner")}
+                            className="w-full py-2.5 sm:py-3.5 text-sm rounded bg-slate-950 text-white font-semibold shadow-lg transition-all cursor-pointer"
+                        >
+                            Create New Trip
+                        </button>
+
+                        <button
+                            onClick={() => navigate("/")}
+                            className="w-full py-2.5 sm:py-3.5 text-sm rounded bg-slate-200 text-slate-900 font-semibold hover:bg-slate-300 cursor-pointer"
+                        >
+                            Back To Home
+                        </button>
+
+                    </div>
+
+                    {/* FOOTER */}
+                    <p className="mt-6 text-xs uppercase tracking-[0.22em] text-slate-400">
+                        Smart Logistics Planner
+                    </p>
+
+                </div>
+
             </div>
         );
 

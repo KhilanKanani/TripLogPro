@@ -357,7 +357,7 @@ const Results = () => {
                                                 {/* DISTANCE */}
                                                 <td className="px-6 py-4 text-slate-600">
                                                     {
-                                                        trip.distanceKm
+                                                        trip.distanceToDropoff
                                                     }{" "}
                                                     km
                                                 </td>
