@@ -275,7 +275,10 @@ const Map = () => {
                                     ?.length >
                                     0 ? (
                                     trip.dailyLogSheets.map(
-                                        (log, i) => (
+                                        (
+                                            log,
+                                            i
+                                        ) => (
                                             <div
                                                 key={
                                                     i
