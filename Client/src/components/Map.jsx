@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Navigation, MapPin, FileText, ShieldCheck, Gauge, Truck, ArrowLeft, } from "lucide-react";
+import { Route, Navigation, MapPin, FileText, ShieldCheck, Gauge, Truck, ArrowLeft, } from "lucide-react";
 
 /* LEAFLET ICON FIX */
 delete (L.Icon.Default.prototype)._getIconUrl;
@@ -18,6 +18,7 @@ const Map = () => {
     const { state } = useLocation();
 
     const trip = state?.trip;
+    console.log("Trip Data  ", trip);
     const navigate = useNavigate()
     const [routeLine, setRouteLine] = useState([]);
     const [pickupPos, setPickupPos] = useState(null);
@@ -52,6 +53,7 @@ const Map = () => {
             {/* MAIN */}
             <div className="max-w-7xl mx-auto px-3">
 
+                {/* Back */}
                 <button
                     onClick={() => navigate(-1)}
                     className="mb-5 cursor-pointer text-sm font-serif inline-flex items-center gap-2 text-slate-900 font-semibold hover:text-blue-600 transition-all duration-300"
@@ -128,22 +130,35 @@ const Map = () => {
                     </MapContainer>
                 </div>
 
-                <div className="mt-5 bg-white/90 backdrop-blur-xl border border-slate-200 rounded shadow-xl p-3 sm:p-5 grid grid-cols-2 gap-3">
+                {/* Distance */}
+                <div className="mt-5 bg-white/90 backdrop-blur-xl border border-slate-200 rounded shadow-xl p-3 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+
+                    {/* CURRENT → PICKUP */}
                     <MiniCard
-                        icon={
-                            <Gauge size={18} />
-                        }
-                        title="Cycle Used"
-                        value={`${trip.currentCycleUsedHours || 0
-                            } Hr`}
+                        icon={<MapPin size={16} />}
+                        title={`${trip.currentLocation} → ${trip.pickupLocation}`}
+                        value={`${trip.distanceToPickup || 0} km`}
                     />
 
+                    {/* PICKUP → DROPOFF */}
                     <MiniCard
-                        icon={
-                            <Truck size={18} />
-                        }
-                        title="Status"
-                        value="Running"
+                        icon={<Route size={16} />}
+                        title={`${trip.pickupLocation} → ${trip.dropoffLocation}`}
+                        value={`${trip.distanceToDropoff || 0} km`}
+                    />
+
+                    {/* TOTAL ROUTE */}
+                    <MiniCard
+                        icon={<Navigation size={16} />}
+                        title="Full Journey"
+                        value={`${trip.distanceKm || 0} km`}
+                    />
+
+                    {/* CYCLE */}
+                    <MiniCard
+                        icon={<Gauge size={16} />}
+                        title="Cycle Used"
+                        value={`${trip.currentCycleUsedHours || 0} Hr`}
                     />
 
                 </div>
@@ -365,7 +380,7 @@ const GlassCard = ({ icon, title, children, }) => (
 const MiniCard = ({ icon, title, value, }) => (
     <div className="rounded bg-white border border-slate-200 p-3">
 
-        <div className="flex items-center gap-2 text-slate-600 text-xs uppercase tracking-[0.18em]">
+        <div className="flex items-center gap-1 text-slate-600 text-[10px] uppercase tracking-[0.18em]">
             {icon}
             {title}
         </div>

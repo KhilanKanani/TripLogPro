@@ -233,7 +233,7 @@ const Results = () => {
                 <div className="rounded bg-white border border-slate-200 shadow-sm overflow-hidden">
 
                     {/* HEADER */}
-                    <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                         <div>
                             <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
@@ -298,6 +298,10 @@ const Results = () => {
                                         </th>
 
                                         <th className="px-6 py-4">
+                                            Distance Used
+                                        </th>
+
+                                        <th className="px-6 py-4">
                                             Cycle Used
                                         </th>
 
@@ -348,6 +352,14 @@ const Results = () => {
                                                     {
                                                         trip.dropoffLocation
                                                     }
+                                                </td>
+
+                                                {/* DISTANCE */}
+                                                <td className="px-6 py-4 text-slate-600">
+                                                    {
+                                                        trip.distanceKm
+                                                    }{" "}
+                                                    km
                                                 </td>
 
                                                 {/* CYCLE */}

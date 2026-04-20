@@ -6,16 +6,27 @@ import Planner from "./pages/Planner";
 import ContactUs from "./pages/ContactUs";
 import Results from "./pages/Results";
 import Map from "./components/Map";
+import NotFound from "./components/NotFound";
 
 function Layout() {
   const location = useLocation();
 
-  const isMapPage =
-    location.pathname === "/map";
+  const validRoutes = [
+    "/",
+    "/planner",
+    "/results",
+    "/contact-us",
+    "/map",
+  ];
+
+  const isNotFoundPage = !validRoutes.includes(location.pathname);
+
+  const hideLayout = location.pathname === '/map' || isNotFoundPage;
+
 
   return (
     <>
-      {!isMapPage && <Navbar />}
+      {!hideLayout && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -23,9 +34,10 @@ function Layout() {
         <Route path="/results" element={<Results />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/map" element={<Map />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
-      <Footer />
+      {!hideLayout && <Footer />}
     </>
   );
 }

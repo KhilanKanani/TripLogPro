@@ -27,6 +27,24 @@ const TripSchema = new mongoose.Schema(
             max: 70,
         },
 
+        distanceToPickup: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+
+        distanceToDropoff: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+
+        distanceKm: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+
         routeInstructions: {
             type: [String],
             default: [],
