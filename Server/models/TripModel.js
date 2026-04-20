@@ -2,123 +2,62 @@ const mongoose = require("mongoose");
 
 const TripSchema = new mongoose.Schema(
     {
-        userId: {
-            type: String,
-            required: true,
-        },
-
-        current: {
+        currentLocation: {
             type: String,
             required: true,
             trim: true,
         },
 
-        pickup: {
+        pickupLocation: {
             type: String,
             required: true,
             trim: true,
         },
 
-        dropoff: {
+        dropoffLocation: {
             type: String,
             required: true,
             trim: true,
         },
 
-        vehicleType: {
-            type: String,
-            required: true,
-            enum: [
-                "Bike",
-                "Scooter",
-                "Car",
-                "Tanker",
-                "Mini Truck",
-                "Pickup Truck",
-                "Container Truck",
-                "Trailer Truck",
-            ],
-        },
-
-        fuelCapacity: {
+        currentCycleUsedHours: {
             type: Number,
             required: true,
-            min: 1,
-        },
-
-        cycleUsed: {
-            type: Number,
-            default: 0,
             min: 0,
+            max: 70,
         },
 
-        distanceKm: {
-            type: Number,
-            default: 0,
-        },
-
-        durationText: {
-            type: String,
-            default: "",
-        },
-
-        estimatedArrival: {
-            type: String,
-            default: "",
+        routeInstructions: {
+            type: [String],
+            default: [],
         },
 
         routePath: {
-            type: String,
-            default: "",
+            type: [[Number]],
+            default: [],
         },
 
-        mileage: {
-            type: Number,
-            default: 0,
-        },
+        stopsAndRests: [
+            {
+                stopType: String,
+                location: String,
+                afterMiles: Number,
+                restHours: Number,
+            },
+        ],
 
-        fuelRequired: {
-            type: Number,
-            default: 0,
-        },
-
-        fuelStops: {
-            type: Number,
-            default: 0,
-        },
-
-        fuelCost: {
-            type: Number,
-            default: 0,
-        },
-
-        avgSpeed: {
-            type: Number,
-            default: 0,
-        },
-
-        cycleLeft: {
-            type: Number,
-            default: 70,
-        },
-
-        status: {
-            type: String,
-            enum: [
-                "Pending",
-                "Active",
-                "Completed",
-                "Cancelled",
-            ],
-            default: "Active",
-        },
+        dailyLogSheets: [
+            {
+                day: Number,
+                drivingHours: Number,
+                onDutyHours: Number,
+                offDutyHours: Number,
+                sleeperHours: Number,
+            },
+        ],
     },
     { timestamps: true, }
 );
-
-TripSchema.index({ userId: 1 });
-TripSchema.index({ createdAt: -1 });
-TripSchema.index({ status: 1 });
 
 const TripModel = mongoose.model("Trip", TripSchema);
 module.exports = TripModel;

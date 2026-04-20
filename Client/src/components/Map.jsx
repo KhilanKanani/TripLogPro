@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import { Navigation, MapPin, FileText, ShieldCheck, Gauge, Truck, ArrowLeft, } from "lucide-react";
 
 /* LEAFLET ICON FIX */
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -19,16 +19,16 @@ const Map = () => {
 
     const trip = state?.trip;
     const navigate = useNavigate()
-    const [routeLine, setRouteLine] = useState<any[]>([]);
-    const [pickupPos, setPickupPos] = useState<any>(null);
-    const [dropPos, setDropPos] = useState<any>(null);
+    const [routeLine, setRouteLine] = useState([]);
+    const [pickupPos, setPickupPos] = useState(null);
+    const [dropPos, setDropPos] = useState(null);
 
     useEffect(() => {
         if (!trip) return;
 
         if (trip.routePath && Array.isArray(trip.routePath)) {
             const coords =
-                trip.routePath.map((item: any) => [
+                trip.routePath.map((item) => [
                     item[1],
                     item[0],
                 ]);
@@ -191,8 +191,8 @@ const Map = () => {
                                 0 ? (
                                 trip.stopsAndRests.map(
                                     (
-                                        item: any,
-                                        i: number
+                                        item,
+                                        i
                                     ) => (
                                         <div
                                             key={
@@ -236,8 +236,8 @@ const Map = () => {
                                     0 ? (
                                     trip.routeInstructions.map(
                                         (
-                                            item: string,
-                                            i: number
+                                            item,
+                                            i
                                         ) => (
                                             <div
                                                 key={
@@ -275,10 +275,7 @@ const Map = () => {
                                     ?.length >
                                     0 ? (
                                     trip.dailyLogSheets.map(
-                                        (
-                                            log: any,
-                                            i: number
-                                        ) => (
+                                        (log, i) => (
                                             <div
                                                 key={
                                                     i
@@ -339,7 +336,7 @@ const Map = () => {
 };
 
 /* CARD */
-const GlassCard = ({ icon, title, children, }: any) => (
+const GlassCard = ({ icon, title, children, }) => (
     <div className="rounded bg-white border border-slate-200 p-4 h-90 overflow-y-auto sm:p-6 shadow-[0_15px_50px_rgba(15,23,42,0.06)]">
 
         <div className="flex items-center gap-3 mb-5">
@@ -362,7 +359,7 @@ const GlassCard = ({ icon, title, children, }: any) => (
 );
 
 /* MINI TOP */
-const MiniCard = ({ icon, title, value, }: any) => (
+const MiniCard = ({ icon, title, value, }) => (
     <div className="rounded bg-white border border-slate-200 p-3">
 
         <div className="flex items-center gap-2 text-slate-600 text-xs uppercase tracking-[0.18em]">
@@ -378,7 +375,7 @@ const MiniCard = ({ icon, title, value, }: any) => (
 );
 
 /* INFO */
-const InfoRow = ({ label, value, }: any) => (
+const InfoRow = ({ label, value, }) => (
     <div className="rounded bg-slate-100 p-3">
 
         <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
@@ -393,7 +390,7 @@ const InfoRow = ({ label, value, }: any) => (
 );
 
 /* FIT MAP */
-const FitRoute = ({ pickup, drop, }: any) => {
+const FitRoute = ({ pickup, drop, }) => {
     const map = useMap();
 
     useEffect(() => {

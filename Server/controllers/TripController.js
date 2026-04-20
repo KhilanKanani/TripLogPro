@@ -1,125 +1,52 @@
-const axios = require("axios");
 const Trip = require("../models/TripModel");
+const { geocodeLocation, getRoute, buildTripData, } = require("../services/TripService");
 
 const generateTrip = async (req, res) => {
     try {
-        const { current, pickup, dropoff, vehicleType, fuelCapacity, cycleUsed, } = req.body;
+        const { currentLocation, pickupLocation, dropoffLocation, currentCycleUsedHours, } = req.body;
 
-        if (!current || !pickup || !dropoff || !vehicleType) {
+        if (!currentLocation || !pickupLocation || !dropoffLocation) {
             return res.status(400).json({
                 success: false,
-                message: "All required fields missing",
+                message: "All fields required",
             });
         }
 
-        const apiKey = process.env.GOOGLE_MAP_KEY;
+        const currentGeo = await geocodeLocation(currentLocation);
 
-        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(dropoff)}&key=${apiKey}`;
+        const pickupGeo = await geocodeLocation(pickupLocation);
 
-        const response = await axios.get(url);
+        const dropGeo = await geocodeLocation(dropoffLocation);
 
-        if (response.data.status !== "OK") {
+        if (!currentGeo || !pickupGeo || !dropGeo) {
             return res.status(400).json({
                 success: false,
-                message: response.data.status,
+                message: "Invalid locations",
             });
         }
 
-        const route = response.data.routes[0];
-        const leg = route.legs[0];
+        const route1 = await getRoute(currentGeo, pickupGeo);
 
-        const distanceKm = +(leg.distance.value / 1000).toFixed(1);
-        const durationText = leg.duration.text;
+        const route2 = await getRoute(pickupGeo, dropGeo);
 
-        let mileage = 10;
-        let avgSpeed = 50;
-
-        switch (vehicleType) {
-            case "Bike":
-                mileage = 45;
-                avgSpeed = 55;
-                break;
-
-            case "Scooter":
-                mileage = 38;
-                avgSpeed = 50;
-                break;
-
-            case "Car":
-                mileage = 18;
-                avgSpeed = 65;
-                break;
-
-            case "Mini Truck":
-                mileage = 12;
-                avgSpeed = 58;
-                break;
-
-            case "Pickup Truck":
-                mileage = 10;
-                avgSpeed = 55;
-                break;
-
-            case "Container Truck":
-                mileage = 7;
-                avgSpeed = 52;
-                break;
-
-            case "Trailer Truck":
-                mileage = 5;
-                avgSpeed = 48;
-                break;
-
-            default:
-                mileage = 10;
-                avgSpeed = 50;
+        if (!route1 || !route2) {
+            return res.status(400).json({
+                success: false,
+                message: "Route not found",
+            });
         }
 
-        const fuelRequired = +(distanceKm / mileage).toFixed(1);
+        const tripData = buildTripData({
+            currentLocation,
+            pickupLocation,
+            dropoffLocation,
+            currentCycleUsedHours,
 
-        const fuelStops = Math.max(0, Math.ceil(fuelRequired / Number(fuelCapacity)) - 1);
-
-        const fuelCost = Math.ceil(fuelRequired * 95);
-
-        const cycleLeft = Math.max(0, 70 - Number(cycleUsed || 0));
-
-        const driveHours = distanceKm / avgSpeed;
-
-        const totalHours = Math.ceil(driveHours);
-
-        const estimatedArrival =
-            totalHours > 24
-                ? `${Math.floor(
-                    totalHours / 24
-                )} Day ${totalHours % 24} Hr`
-                : `${totalHours} Hr`;
-
-        const trip = await Trip.create({
-            userId,
-
-            current,
-            pickup,
-            dropoff,
-
-            vehicleType,
-            fuelCapacity,
-            cycleUsed,
-
-            distanceKm,
-            durationText,
-            estimatedArrival,
-            routePath: route.overview_polyline.points,
-
-            mileage,
-            fuelRequired,
-            fuelStops,
-            fuelCost,
-
-            avgSpeed,
-            cycleLeft,
-
-            status: "Active",
+            route1,
+            route2,
         });
+
+        const trip = await Trip.create(tripData);
 
         return res.status(201).json({
             success: true,
@@ -127,18 +54,19 @@ const generateTrip = async (req, res) => {
             trip,
         });
     }
-    
+
     catch (error) {
         return res.status(500).json({
             success: false,
-            message: error.message,
+            message:
+                error.message,
         });
     }
 };
 
 const getTrips = async (req, res) => {
     try {
-        const trips = await Trip.find().sort({ createdAt: -1 });
+        const trips = await Trip.find().sort({ createdAt: -1, }).lean();
 
         return res.status(200).json({
             success: true,
@@ -146,11 +74,11 @@ const getTrips = async (req, res) => {
             trips,
         });
     }
-
     catch (error) {
         return res.status(500).json({
             success: false,
-            message: error.message,
+            message:
+                error.message,
         });
     }
 };
