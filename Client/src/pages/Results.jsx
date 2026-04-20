@@ -317,6 +317,9 @@ const Results = () => {
                                             Created
                                         </th>
 
+                                        <th className="px-6 py-4">
+                                            Status
+                                        </th>
                                     </tr>
                                 </thead>
 
@@ -401,6 +404,31 @@ const Results = () => {
                                                     ).toLocaleDateString()}
                                                 </td>
 
+                                                {/* STATUS */}
+                                                <td className="px-6 py-4">
+
+                                                    <span
+                                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${trip.status ===
+                                                                "completed"
+                                                                ? "bg-emerald-200 text-emerald-600"
+                                                                : trip.status ===
+                                                                    "in-progress"
+                                                                    ? "bg-yellow-200 text-yellow-600"
+                                                                    : trip.status ===
+                                                                        "cancelled"
+                                                                        ? "bg-red-200 text-red-600"
+                                                                        : "bg-slate-200 text-slate-600"
+                                                            }`}
+                                                    >
+                                                        {trip.status
+                                                            .charAt(0)
+                                                            .toUpperCase() +
+                                                            trip.status.slice(
+                                                                1
+                                                            )}
+                                                    </span>
+
+                                                </td>
                                             </tr>
                                         )
                                     )}

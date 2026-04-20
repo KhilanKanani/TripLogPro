@@ -73,6 +73,12 @@ const TripSchema = new mongoose.Schema(
                 sleeperHours: Number,
             },
         ],
+
+        status: {
+            type: String,
+            enum: ["planned", "in-progress", "completed", "cancelled"],
+            default: "planned",
+        },
     },
     { timestamps: true, }
 );
