@@ -46,7 +46,7 @@ const Planner = () => {
             });
         }
 
-        catch (error: any) {
+        catch (error) {
             console.log(error);
             toast.error(error?.response?.data?.message || "Failed to generate route", { id: toastId, });
         }

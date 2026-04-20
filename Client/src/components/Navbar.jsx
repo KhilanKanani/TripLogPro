@@ -43,7 +43,7 @@ const Navbar = () => {
         }
     ];
 
-    const activeLink = (path: string) =>
+    const activeLink = (path) =>
         location.pathname === path
             ? "text-slate-950"
             : "text-slate-500 hover:text-slate-900";

@@ -19,7 +19,7 @@ import axios from "axios";
 
 const Results = () => {
 
-    const [trips, setTrips] = useState<any[]>([]);
+    const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchTrips = async () => {

@@ -1,8 +1,9 @@
 :: CLient ::
 
-=> npm i react-router-dom axios                                         
+=> npm i react-router-dom                                         
 => npm i tailwindcss @tailwindcss/vite                                  
-=> npm i axios                                                  
+=> npm i axios   
+=> npm i lucide-react                                               
 => npm i sonner                                         
 => npm i @react-google-maps/api                                 
 => npm i react-leaflet                          
